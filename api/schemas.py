@@ -37,6 +37,14 @@ class PostResponse(PostBase):
     class Config:
         orm_mode = True
 
+class PostVoteOut(BaseModel):
+    Post: PostResponse
+    votes:int
+
+    class Config:
+        orm_mode=True
+
+
 class UserBase(BaseModel):
     name : constr(min_length=1)
     email : EmailStr
@@ -63,6 +71,7 @@ class Profilebase(BaseModel):
     phone: constr(min_length=10, max_length=10)
 
 class ProfileOut(Profilebase):
+
     class Config:
         orm_mode = True
 
@@ -83,6 +92,12 @@ class Token(BaseModel):
 
 class Tokendata(BaseModel):
     id : Optional[str] = None
+
+
+
+class Votes(BaseModel):
+    posts_id:int
+    dir:conint(le=1)
 
 # class UserCreate(BaseModel):
 #     id : int

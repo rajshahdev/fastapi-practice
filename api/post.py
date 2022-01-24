@@ -4,6 +4,7 @@ from sqlalchemy.orm.session import Session
 from typing import Optional
 from . import models
 from . import schemas
+from sqlalchemy import func
 from .database import get_db
 from . import oauth2
 router = APIRouter(
@@ -11,7 +12,7 @@ router = APIRouter(
     tags = ['posts']
 )
 
-@router.get("/", response_model=List[schemas.PostResponse])
+@router.get("/", response_model=List[schemas.PostVoteOut])
 def GetPost(db: Session = Depends(get_db),user_id:int = Depends(oauth2.get_current_user), limit:int = 10, offset:int =2, search: Optional[str]=""):
     
     # we can put any amount of details in payload and you can configure the payload in auth.py(login)
@@ -24,13 +25,18 @@ def GetPost(db: Session = Depends(get_db),user_id:int = Depends(oauth2.get_curre
     # posts = db.query(models.Post).filter(models.Post.owner_id == user_id.id).all()
     
     # if we want to show all the posts then
-    posts = db.query(models.Post).filter(models.Post.title.contains(search)).limit(limit).offset(offset).all()
+    # posts = db.query(models.Post).filter(models.Post.title.contains(search)).limit(limit).offset(offset).all()
+    posts = db.query(models.Post, func.count(models.Votes.posts_id).label("votes")).join\
+        (models.Votes, models.Votes.posts_id == models.Post.id, isouter=True).group_by(models.Post.id).all()
     return posts
 
 
-@router.get('/{id}', response_model=schemas.PostResponse)
+
+@router.get('/{id}', response_model=schemas.PostVoteOut)
 def GetPostNum(id: int, db: Session = Depends(get_db)):
-    posts = db.query(models.Post).filter(models.Post.id == str(id)).first()
+    posts = db.query(models.Post, func.count(models.Votes.posts_id).label("votes")).join\
+        (models.Votes, models.Votes.posts_id == models.Post.id, isouter=True).group_by(models.Post.id).\
+        filter(models.Post.id == str(id)).first()
     if not posts:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f"the post with id {id} is not found")
