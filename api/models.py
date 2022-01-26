@@ -1,5 +1,5 @@
 
-from sqlalchemy import Column, Integer, Boolean, String, Text, ForeignKey
+from sqlalchemy import Column, Integer, Boolean, String, Text, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.sqltypes import TIMESTAMP 
 from .database import Base
@@ -45,8 +45,20 @@ class Votes(Base):
     user_id = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'), primary_key=True)
     posts_id = Column(Integer, ForeignKey('posts.id', ondelete='CASCADE'), primary_key=True)
 
+class EmailOtp(Base):
+    __tablename__ = 'emailotp'
+    id = Column(Integer,primary_key=True,nullable=False)
+    email = Column(String(200),nullable=False)
+    otp = Column(String(200),nullable=False)
+    expires = Column(DateTime,nullable=False)
+    user_id = Column(Integer,ForeignKey('users.id',ondelete="CASCADE") ,nullable=False)
 
-
+class Imagefile(Base):
+    __tablename__ = 'imagefile'
+    id = Column(Integer,primary_key=True,nullable=False)
+    path = Column(String(200),nullable=False)
+    user_id = Column(Integer,ForeignKey('users.id',ondelete="CASCADE") ,nullable=False)
+    timestamp = Column(DateTime,nullable=False)
 
 
 
