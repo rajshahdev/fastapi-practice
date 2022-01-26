@@ -1,7 +1,7 @@
 from pydantic import BaseModel, validator, ValidationError, Field
 from datetime import datetime
 
-from typing import Optional, Text
+from typing import Optional, Text, List
 
 from pydantic.networks import EmailStr
 from pydantic.types import constr, conint
