@@ -3,11 +3,12 @@ from typing import Optional, List
 from sqlalchemy.orm.session import Session
 from . import models
 from fastapi.responses import JSONResponse
-from .utils import hash
+from .utils import hash, rand_pass, welcome_auth_email, generate_auth_email
 from . import schemas
 from .database import get_db
 from fastapi.encoders import jsonable_encoder
 import json
+from datetime import datetime, timedelta
 
 router = APIRouter(
     prefix="/users",
@@ -29,6 +30,20 @@ def UserCreate(users: schemas.UserBase, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(new_user)
     # return new_user
+    # otp verification code from EmailOtp function
+    expires = datetime.utcnow() + timedelta(minutes=3)
+
+    randomnum = rand_pass(5)
+    expires = expires.strftime('%Y-%m-%d %H:%M:%S.%f')
+
+    welcome_auth_email(users.name, randomnum, users.email)
+    # generate_auth_email(randomnum,users.email)
+    # print(schemas.Otp(email=userotp.email,otp = randomnum, expires=expires))
+    new_otp = models.EmailOtp(
+        **schemas.Otp(email=users.email, otp=randomnum, expires=expires, user_id=new_user.id).dict())
+
+    db.add(new_otp)
+    db.commit()
     return {"status": True, "data": new_user, "message": "User Created Successfully"}
 
 
