@@ -45,6 +45,37 @@ class PostVoteOut(BaseModel):
         orm_mode=True
 
 
+class OtpEmail(BaseModel):
+    email: EmailStr
+
+
+class Otp(OtpEmail):
+    otp: str
+    expires: datetime
+    user_id: int
+
+
+class validateotp(BaseModel):
+    otp: str
+
+class Imagefile(BaseModel):
+    path: str
+    user_id:int
+    timestamp:str
+
+class Imageid(BaseModel):
+    id:int
+
+class ImageList(BaseModel):
+    path: List[str]
+
+    class Config:
+        orm_mode = True
+
+
+class Imageout(ImageList):
+    status = bool
+
 class UserBase(BaseModel):
     name : constr(min_length=1)
     email : EmailStr
