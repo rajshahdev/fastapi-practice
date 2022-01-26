@@ -58,6 +58,9 @@ class Otp(OtpEmail):
 class validateotp(BaseModel):
     otp: str
 
+class ForgetPassword(BaseModel):
+    password:str
+
 class Imagefile(BaseModel):
     path: str
     user_id:int

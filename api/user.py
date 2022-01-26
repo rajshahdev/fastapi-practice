@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Response, status, HTTPException, Depends, APIRouter
+from fastapi import FastAPI, Response, status, HTTPException, Depends, APIRouter, UploadFile, File
 from typing import Optional, List
 from sqlalchemy.orm.session import Session
 from . import models
@@ -9,6 +9,8 @@ from .database import get_db
 from fastapi.encoders import jsonable_encoder
 import json
 from datetime import datetime, timedelta
+import shutil, os
+from . import oauth2
 
 router = APIRouter(
     prefix="/users",
@@ -109,3 +111,75 @@ def validateotp(id:int,post_otp:schemas.validateotp, db: Session = Depends(get_d
     else:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f"Time out")
+
+
+@router.post('/forget/{id}')
+def forget(id: int, forget: schemas.ForgetPassword, db: Session = Depends(get_db)):
+    user_query = db.query(models.User).filter(models.User.id == id)
+    user = user_query.first()
+
+    if user == None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"the post with id {id} is not found")
+
+    hashed_password = hash(forget.password)
+    forget.password = hashed_password
+
+    user_query.update(forget.dict(), synchronize_session=False)
+    db.commit()
+    return {"status": True, "data": {"id": user.id}, "message": "success"}
+
+
+@router.post("/image/{id}")
+def image(id: int, image: UploadFile = File(...), db: Session = Depends(get_db),
+          user_id: int = Depends(oauth2.get_current_user)):
+    if id != user_id.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized")
+
+    user_query = db.query(models.User).filter(models.User.id == id)
+    user = user_query.first()
+
+    if user == None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"User not found")
+
+    direct_path = os.getcwd()
+
+    folder_path = os.path.join(direct_path, 'imagefolder')
+
+    if not os.path.isdir(folder_path):
+        os.mkdir(folder_path)
+
+    image_folder_path = os.path.join(folder_path, f'{id}')
+
+    if not os.path.isdir(image_folder_path):
+        os.mkdir(image_folder_path)
+
+    os.chdir(image_folder_path)
+
+    ind_time = datetime.now(timezone("Asia/Kolkata")).strftime('%Y-%m-%d-%H:%M:%S')
+    imagefilepath = os.path.join(image_folder_path, f'{id}_{ind_time}.png')
+    # print(imagefilepath)
+    with open(imagefilepath, "wb") as buffer:
+        shutil.copyfileobj(image.file, buffer)
+    os.chdir(direct_path)
+    # timestamp_ind_time = datetime.now(timezone("Asia/Kolkata")).strftime('%Y-%m-%d %H:%M:%S')
+    save_image = models.Imagefile(**schemas.Imagefile(path=imagefilepath, user_id=id, timestamp=ind_time).dict())
+    db.add(save_image)
+    db.commit()
+    db.refresh(save_image)
+    return {"status": True, "data": {"id": id, "image": imagefilepath, "timestamp": ind_time}}
+
+
+@router.post('/image')
+def getimage(schemas_user_id: schemas.Imageid, db: Session = Depends(get_db),
+             user_id: int = Depends(oauth2.get_current_user)):
+    if schemas_user_id.id != user_id.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized")
+    print(type(schemas_user_id.id))
+    user_query = db.query(models.Imagefile).filter(models.Imagefile.user_id == str(schemas_user_id.id)).all()
+    # user = user_query.first()
+    if not user_query:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"User not found")
+    return {"status": True, "data": user_query}
