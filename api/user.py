@@ -167,7 +167,6 @@ def forget(id: int, forget: schemas.ForgetPassword, db: Session = Depends(get_db
 #     os.chdir(direct_path)
 #     # timestamp_ind_time = datetime.now(timezone("Asia/Kolkata")).strftime('%Y-%m-%d %H:%M:%S')
 #     # save_image = models.Imagefile(**schemas.Imagefile(path=imagefilepath, user_id=id, timestamp=ind_time).dict())
-#     save_image = models.Imagefile(path=imagefilepath, user_id=id, timestamp=ind_time)
 #     db.add(save_image)
 #     db.commit()
 #     db.refresh(save_image)
