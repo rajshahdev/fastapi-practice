@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="f9f76558-b03d-4fb0-ac32-8a59a667c7bc" name="Changes" comment="Join two table's and getting the vote result in postresponse.">
-      <change afterPath="$PROJECT_DIR$/alembic/versions/f93fdc0f31bc_auto_generate_all_the_tables.py" afterDir="false" />
+    <list default="true" id="f9f76558-b03d-4fb0-ac32-8a59a667c7bc" name="Changes" comment="added alembic">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/post.py" beforeDir="false" afterPath="$PROJECT_DIR$/api/post.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -32,7 +33,7 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/api" />
-    <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
+    <property name="settings.editor.selected.configurable" value="preferences.editor.code.editing" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -70,7 +71,14 @@
       <option name="project" value="LOCAL" />
       <updated>1643040729472</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="added alembic">
+      <created>1643048825959</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1643048825959</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="UnknownFeatures">
@@ -93,6 +101,7 @@
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <MESSAGE value="initial commit" />
     <MESSAGE value="Join two table's and getting the vote result in postresponse." />
-    <option name="LAST_COMMIT_MESSAGE" value="Join two table's and getting the vote result in postresponse." />
+    <MESSAGE value="added alembic" />
+    <option name="LAST_COMMIT_MESSAGE" value="added alembic" />
   </component>
 </project>
