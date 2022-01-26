@@ -7,12 +7,16 @@ models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="FastApi-BlogApp",
-    description="This api is fully functional api and anyone can use it. \n\n checkout my github repo.:- https://github.com/rajshahdev/fastapi-practice",
+    description="This api is fully functional api and anyone can use it. \n\n checkout my github repo.:- <a href='https://github.com/rajshahdev/fastapi-practice'>Git Repo</a>",
     version="0.0.1",
     contact={
         "name": "Raj Shah",
         "email": "be.rajshah@gmail.com",
-    }
+    },
+    license_info={
+        "name": "MIT License",
+        "url": "https://github.com/rajshahdev/fastapi-practice/blob/main/LICENSE",
+    },
 )
 app.include_router(post.router)
 app.include_router(user.router)
