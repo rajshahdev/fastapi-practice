@@ -68,3 +68,44 @@ def UpdateUser(id: int, users: schemas.Profilebase, db: Session = Depends(get_db
     user_query.update(users.dict(), synchronize_session=False)
     db.commit()
     return {"status": True, "data": user_query.first(), "message": "User Modified Successfully"}
+
+
+@router.post('/otp', status_code=status.HTTP_200_OK)
+def OtpEmail(userotp: schemas.OtpEmail, db: Session = Depends(get_db)):
+    expires = datetime.utcnow() + timedelta(minutes=3)
+
+    user_otp = db.query(models.User).filter(models.User.email == userotp.email)
+    user_otp_verify = user_otp.first()
+
+    user_id = user_otp_verify.id
+
+    if user_otp_verify == None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"the {userotp.email} is not found")
+
+    randomnum = rand_pass(5)
+    expires = expires.strftime('%Y-%m-%d %H:%M:%S.%f')
+
+    generate_auth_email(randomnum, userotp.email)
+    # print(schemas.Otp(email=userotp.email,otp = randomnum, expires=expires))
+    new_otp = models.EmailOtp(
+        **schemas.Otp(email=userotp.email, otp=randomnum, expires=expires, user_id=user_id).dict())
+
+    db.add(new_otp)
+    db.commit()
+    return {"status": True, "data": {"id": user_otp_verify.id}, "message": "success"}
+
+@router.post('/validateotp/{id}')
+def validateotp(id:int,post_otp:schemas.validateotp, db: Session = Depends(get_db)):
+    user_otp = db.query(models.EmailOtp).filter(models.EmailOtp.user_id == id)
+
+    if user_otp.first() == None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"Invalid user")
+
+    if datetime.utcnow() < user_otp.all()[-1].expires:
+        if user_otp.all()[-1].otp == post_otp.otp:
+            return {"status":True, "data":{"id":user_otp.all()[-1].user_id}, "message":"success"}
+    else:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"Time out")
