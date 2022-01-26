@@ -7,7 +7,7 @@ models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="FastApi-BlogApp",
-    description="This api is fully functional api and anyone can use it. \n\n checkout my github repo.:- <a href='https://github.com/rajshahdev/fastapi-practice'>Git Repo</a>",
+    description="This api is fully functional api and anyone can use it. \n\n checkout my Github Repo.:- <a href='https://github.com/rajshahdev/fastapi-practice'>fastapi-practice</a>",
     version="0.0.1",
     contact={
         "name": "Raj Shah",
