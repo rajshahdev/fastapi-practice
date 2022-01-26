@@ -133,7 +133,8 @@ def forget(id: int, forget: schemas.ForgetPassword, db: Session = Depends(get_db
 @router.post("/image/{id}")
 def image(id: int, image: UploadFile = File(...), db: Session = Depends(get_db),
           user_id: int = Depends(oauth2.get_current_user)):
-    if id != user_id.id:
+    if str(id) != user_id.id:
+
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized")
 
     user_query = db.query(models.User).filter(models.User.id == id)
